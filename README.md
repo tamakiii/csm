@@ -14,43 +14,29 @@ A hosted [Hugging Face space](https://huggingface.co/spaces/sesame/csm-1b) is al
 
 ## Requirements
 
-* A CUDA-compatible GPU (or CPU for slower generation)
+* A CUDA-compatible GPU
 * The code has been tested on CUDA 12.4 and 12.6, but it may also work on other versions
-* Python 3.11 is recommended (3.10+ should work, but sentencepiece has issues with 3.13+)
+* Similarly, Python 3.10 is recommended, but newer versions may be fine
 * For some audio operations, `ffmpeg` may be required
 * Access to the following Hugging Face models:
-  * [CSM-1B](https://huggingface.co/sesame/csm-1b) - **Required**
-  * [Llama-3.2-1B](https://huggingface.co/meta-llama/Llama-3.2-1B) - **Optional** (will use alternatives if not accessible)
+  * [Llama-3.2-1B](https://huggingface.co/meta-llama/Llama-3.2-1B)
+  * [CSM-1B](https://huggingface.co/sesame/csm-1b)
 
 ### Setup
 
 ```bash
 git clone git@github.com:SesameAILabs/csm.git
 cd csm
-python3.11 -m venv .venv
+python3.10 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
 # Disable lazy compilation in Mimi
 export NO_TORCH_COMPILE=1
 
-# You will need access to CSM-1B (Llama-3.2-1B is optional)
+# You will need access to CSM-1B and Llama-3.2-1B
 huggingface-cli login
 ```
-
-### Alternative Setup for Gated Models
-
-If you don't have access to Llama-3.2-1B, CSM will automatically use alternative tokenizers:
-
-```bash
-# Run directly - will use fallback tokenizers automatically
-python run_csm.py
-
-# Or specify a tokenizer explicitly
-python run_csm.py --tokenizer microsoft/DialoGPT-medium
-```
-
-📋 **See [TOKENIZER_ALTERNATIVES.md](TOKENIZER_ALTERNATIVES.md) for detailed instructions on using alternative tokenizers.**
 
 ### Windows Setup
 
@@ -62,25 +48,6 @@ This script will generate a conversation between 2 characters, using a prompt fo
 
 ```bash
 python run_csm.py
-```
-
-### Command Line Options
-
-```bash
-# Show help
-python run_csm.py --help
-
-# Specify tokenizer (useful if gated models are inaccessible)
-python run_csm.py --tokenizer microsoft/DialoGPT-medium
-
-# Use CPU instead of GPU
-python run_csm.py --device cpu
-
-# Custom output filename
-python run_csm.py --output my_conversation.wav
-
-# Combine options
-python run_csm.py --tokenizer microsoft/DialoGPT-medium --device cpu --output test.wav
 ```
 
 ## Usage
