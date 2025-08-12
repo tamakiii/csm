@@ -1,4 +1,5 @@
 import os
+import argparse
 import torch
 import torchaudio
 from huggingface_hub import hf_hub_download
@@ -57,11 +58,25 @@ def prepare_prompt(text: str, speaker: int, audio_path: str, sample_rate: int) -
     return Segment(text=text, speaker=speaker, audio=audio_tensor)
 
 def main():
+    parser = argparse.ArgumentParser(description="Generate conversational speech using CSM model")
+    parser.add_argument("--tokenizer", type=str, help="Specify tokenizer model name (e.g., 'microsoft/DialoGPT-medium')")
+    parser.add_argument("--device", type=str, choices=["cuda", "cpu", "auto"], default="auto", help="Device to use")
+    parser.add_argument("--output", type=str, default="full_conversation.wav", help="Output audio file")
+    args = parser.parse_args()
+
+    # Set tokenizer if specified
+    if args.tokenizer:
+        os.environ["CSM_TOKENIZER_MODEL"] = args.tokenizer
+        print(f"Using specified tokenizer: {args.tokenizer}")
+
     # Select the best available device, skipping MPS due to float64 limitations
-    if torch.cuda.is_available():
-        device = "cuda"
+    if args.device == "auto":
+        if torch.cuda.is_available():
+            device = "cuda"
+        else:
+            device = "cpu"
     else:
-        device = "cpu"
+        device = args.device
     print(f"Using device: {device}")
 
     # Load model
@@ -107,11 +122,11 @@ def main():
     # Concatenate all generations
     all_audio = torch.cat([seg.audio for seg in generated_segments], dim=0)
     torchaudio.save(
-        "full_conversation.wav",
+        args.output,
         all_audio.unsqueeze(0).cpu(),
         generator.sample_rate
     )
-    print("Successfully generated full_conversation.wav")
+    print(f"Successfully generated {args.output}")
 
 if __name__ == "__main__":
     main() 
