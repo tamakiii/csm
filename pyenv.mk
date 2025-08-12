@@ -13,5 +13,5 @@ activate: .venv
 	@bash --init-file <(echo "source .venv/bin/activate")
 
 .venv:
-	python -m venv .venv
+	pyenv exec python -m venv .venv
 	.venv/bin/pip install --upgrade pip setuptools wheel
