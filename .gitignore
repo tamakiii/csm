@@ -44,3 +44,7 @@ context_audio.wav
 # Model files
 *.pt
 *.ckpt
+
+# The others
+/*.wav
+.venv/
